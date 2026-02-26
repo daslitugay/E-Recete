@@ -3,12 +3,10 @@
 
 ## Proje Hakkında
 
-![Ürün Tanıtım Görseli](Product.png)
+![Ürün Tanıtım Görseli](project.jpeg)
 
 **Proje Tanımı:** 
-> Projenin ne iş yaptığını anlatan bir paragraflık tanıtım metni buraya yazılacaktır.
-
-**Örnek:** ASY isimli e-ticaret sitemiz, online alışveriş deneyimini kolay ve keyifli hale getirmek için tasarlandı. Geniş ürün yelpazemiz sayesinde müşterilerimize en iyi seçenekleri sunarken, kullanıcı dostu arayüzümüz ile de alışveriş yapmayı daha rahat hale getiriyoruz. Sitemizde yer alan ürünler, kaliteli ve güvenilir markaların en yeni ve trend ürünlerinden oluşuyor. Müşterilerimiz, aradıkları ürünleri hızlı ve kolay bir şekilde bulabilirken, aynı zamanda satın alma süreçlerinde de sorunsuz bir deneyim yaşayacaklar. Hızlı teslimat seçenekleri, güvenli ödeme sistemleri ve müşteri memnuniyetine önem veren satış sonrası hizmetlerimizle, ASY olarak müşterilerimizin beklentilerini en üst seviyede karşılamayı hedefliyoruz. Her zaman en iyi fiyatlarla, kaliteli ürünleri müşterilerimize sunmak için çalışıyoruz ve müşteri memnuniyeti bizim için her zaman önceliklidir. ASY e-ticaret sitemize hoş geldiniz, size hizmet vermek için sabırsızlanıyoruz.
+Evde bulunan ilaçların düzenli bir şekilde takip edilmesini sağlayan bu sistem, kullanıcıların kendi kişisel dijital ilaç dolaplarını oluşturmalarına yardımcı olmak amacıyla tasarlanmıştır. Kullanıcılar, ellerinde bulunan ilaçların sayısını, bir kutu içerisindeki adet bilgisini ve son kullanma tarihlerini sisteme girerek ilaçlarını kolayca kayıt altına alabilirler. Bu sayede kullanıcılar hem ilaçlarını daha düzenli bir şekilde takip edebilir hem de ihtiyaç duyduklarında hangi ilaçların ellerinde bulunduğunu hızlıca görebilirler. Sistem, doktor tarafından reçete edilen bir ilacın kullanıcıda yeterli miktarda bulunması durumunda gereksiz ilaç satın alınmasını önlemeyi hedefler. Aynı zamanda son kullanma tarihi yaklaşan ilaçların fark edilmesini sağlayarak hem sağlık açısından daha güvenli bir kullanım sunar hem de ilaç israfının azaltılmasına katkı sağlar. Kullanıcı dostu yapısı sayesinde bireylerin evlerindeki ilaçları daha bilinçli ve kontrollü bir şekilde yönetmelerine yardımcı olan bu proje, kişisel sağlık yönetimini kolaylaştırmayı amaçlamaktadır.
 
 **Proje Kategorisi:** 
 > Sağlık alanı.
