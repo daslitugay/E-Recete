@@ -1,4 +1,4 @@
-# PROJE ADI
+# E-RECETE
 
 > **Not:** Bu bölüm proje adı ile güncellenmelidir.
 
