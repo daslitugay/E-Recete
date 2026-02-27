@@ -37,4 +37,4 @@ Tüm gereksinimlerinizi çıkardıktan sonra beraber tartışıyoruz ve son gere
 13. **Reçete Görüntüleme** (Derya Aslı Tugay)
 # Gereksinim Dağılımları
 
-1. [Derya Aslı TUGAY'ın Gereksinimleri](Derya-Aslı-TUGAY\Derya-Aslı-TUGAY-Gereksinimler.md)
+1. [Derya Aslı TUGAY'ın Gereksinimleri](Derya-Aslı-TUGAY/Derya-Aslı-TUGAY-Gereksinimler.md)
