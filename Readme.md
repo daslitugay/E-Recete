@@ -12,7 +12,7 @@ Evde bulunan ilaçların düzenli bir şekilde takip edilmesini sağlayan bu sis
 > Sağlık alanı.
 
 **Referans Uygulama:** 
-> [Örnek Referans Uygulama](https://example.com)
+> [Örnek Referans Uygulama](https://enabiz.gov.tr/Account/Login?_st=1)
 
 ---
 
