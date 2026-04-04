@@ -8,11 +8,13 @@ let isConnected=false;
 
 module.exports=async (req, res) => {
     if (!isConnected) {
-        try {
-            await mongoose.connect(process.env.MONGODB_URI);
-        } catch (error) {
-            console.error('Error connecting to MongoDB:', error);
-        }
+        await (async () => {
+            try {
+                await mongoose.connect(process.env.MONGODB_URI);
+            } catch (error) {
+                console.error('Error connecting to MongoDB:', error);
+            }
+        })();
         isConnected = true;
     }
 
