@@ -1,0 +1,30 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f7f7f7;
+  color: #222;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input,
+select,
+button {
+  padding: 10px;
+  font-size: 14px;
+}
+
+button {
+  border: 1px solid #ccc;
+  background: white;
+}
+
+table,
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  background: white;
+}
