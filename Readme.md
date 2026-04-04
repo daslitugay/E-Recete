@@ -18,8 +18,8 @@ Evde bulunan ilaçların düzenli bir şekilde takip edilmesini sağlayan bu sis
 
 ## Proje Linkleri
 
-- **REST API Adresi:** [api.yazmuh.com](https://api.yazmuh.com)
-- **Web Frontend Adresi:** [frontend.yazmuh.com](https://frontend.yazmuh.com)
+- **REST API Adresi:** [e-recete-api.vercel.app](https://e-recete-api.vercel.app)
+- **Web Frontend Adresi:** [e-recete.vercel.app](https://e-recete.vercel.app)
 
 ---
 

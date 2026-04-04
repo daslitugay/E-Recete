@@ -1,59 +1,67 @@
 1. **Üye Olma**
-   - **API Metodu:** `POST api/auth/register`
-   - **Açıklama:** Kullanıcıların yeni hesaplar oluşturarak sisteme kayıt olmasını sağlar. Kişisel bilgilerin toplanmasını ve hesap oluşturma işlemlerini içerir. Kullanıcılar email adresi ve şifre belirleyerek hesap oluşturur.
+   - **API Metodu:** `POST /api/register`
+   - **Açıklama:** Kullanıcıların sisteme yeni hesap oluşturarak kayıt olmasını sağlar. Kullanıcı kayıt olurken ad, kimlik numarası (`IDnumber`), rol (`doctor` veya `patient`) ve şifre bilgilerini girer. Başarılı kayıt işleminden sonra kullanıcı için JWT token üretilir.
 
-2. **Profil Görüntüleme**
-   - **API Metodu:** `GET api/users/{userId}`
-   - **Açıklama:** Kullanıcının profil bilgilerini görüntülemesini sağlar. Kullanıcı adı, email, telefon gibi kişisel bilgiler ve hesap durumu gösterilir. Kullanıcılar kendi profil bilgilerini görüntüleyebilir veya yöneticiler diğer kullanıcıların bilgilerini inceleyebilir. Güvenlik için giriş yapmış olmak gerekir.
+2. **Giriş Yapma**
+   - **API Metodu:** `POST /api/login`
+   - **Açıklama:** Kullanıcıların sisteme giriş yapmasını sağlar. Kullanıcı kimlik numarası (`IDnumber`) ve şifre bilgilerini girerek giriş yapar. Başarılı giriş işleminden sonra kullanıcıya JWT token döndürülür.
 
-3. **Profil Güncelleme**
-   - **API Metodu:** `PUT api/users/{userId}`
-   - **Açıklama:** Kullanıcının profil bilgilerini güncellemesini sağlar. Kullanıcılar ad, soyad, email, telefon gibi kişisel bilgilerini değiştirebilir. Güvenlik için giriş yapmış olmak gerekir ve kullanıcılar yalnızca kendi bilgilerini güncelleyebilir.
+3. **İlaç Ekleme**
+   - **API Metodu:** `POST /api/medications`
+   - **Açıklama:** Sisteme yeni bir ilaç kaydı eklenmesini sağlar. Kullanıcı ilaç adı, son kullanma tarihi, kutu içindeki adet sayısı ve kutu sayısı bilgilerini girerek ilacı kayıt altına alabilir. Bu sayede dijital ilaç dolabı oluşturulur.
 
-4. **Hesap Silme**
-   - **API Metodu:** `DELETE api/users/{userId}`
-   - **Açıklama:** Kullanıcının hesabını sistemden kalıcı olarak silmesini sağlar. Kullanıcı hesabını kapatmak istediğinde veya yönetici tarafından hesap kapatılması gerektiğinde kullanılır. Bu işlem geri alınamaz ve kullanıcının tüm verileri silinir. Güvenlik için giriş yapmış olmak gerekir.
+4. **İlaç Bilgilerini Değiştirme**
+   - **API Metodu:** `PUT /api/medications/{medicationId}`
+   - **Açıklama:** Sistemde kayıtlı bir ilacın bilgilerinin güncellenmesini sağlar. Kullanıcı ilaç adı, son kullanma tarihi, kutu içindeki adet sayısı veya kutu sayısı gibi bilgileri değiştirebilir.
 
-5. **Giriş Yapma**
-   - **API Metodu:** `POST api/auth/login`
-   - **Açıklama:** Kullanıcıların yeni hesaplar oluşturarak sisteme kayıt olmasını sağlar. Kişisel bilgilerin toplanmasını ve hesap oluşturma işlemlerini içerir. Kullanıcılar email adresi ve şifre belirleyerek hesap oluşturur.
+5. **İlaç Silme**
+   - **API Metodu:** `DELETE /api/medications/{medicationId}`
+   - **Açıklama:** Sistemde kayıtlı bir ilacın silinmesini sağlar. Artık kullanılmayan veya elde bulunmayan ilaçlar sistemden kaldırılabilir.
 
-6. **İlaç Ekleme**
-   - **API Metodu:** `POST api/medications`
-   - **Açıklama:** Kullanıcıların evlerinde bulunan ilaçları sisteme ekleyebilmesini sağlar. Kullanıcı ilaç adı, kutu sayısı, kutu içindeki adet bilgisi ve son kullanma tarihi gibi bilgileri girerek ilaçlarını kayıt altına alabilir. Bu sayede kullanıcıların kişisel dijital ilaç dolabı oluşturması sağlanır.
+6. **İlaç Görüntüleme**
+   - **API Metodu:** `GET /api/medications/{medicationId}`
+   - **Açıklama:** Sistemde kayıtlı bir ilacın detaylı bilgilerinin görüntülenmesini sağlar. Kullanıcı ilacın adı, son kullanma tarihi, kutu içindeki adet sayısı ve kutu sayısı gibi bilgileri inceleyebilir.
 
-7. **İlaç Bilgilerini Değiştirme**
-   - **API Metodu:** `PUT api/medications/{medicationId}`
-   - **Açıklama:** Kullanıcıların daha önce sisteme ekledikleri ilaçların bilgilerini güncellemelerini sağlar. İlaç miktarı, adet bilgisi veya son kullanma tarihi gibi bilgiler değiştirilebilir. Bu özellik kullanıcıların ilaç bilgilerini güncel tutmasına yardımcı olur.
+7. **İlaç Listeleme**
+   - **API Metodu:** `GET /api/medications`
+   - **Açıklama:** Sistemde kayıtlı tüm ilaçların listelenmesini sağlar. Kullanıcı eklenen ilaçları toplu şekilde görüntüleyebilir ve ilaç stoğunu takip edebilir.
 
-8. **İlaç Silme**
-   - **API Metodu:** `DELETE api/medications/{medicationId}`
-   - **Açıklama:** Kullanıcıların artık kullanmadıkları veya ellerinde bulunmayan ilaçları sistemden kaldırmasını sağlar. Kullanıcı seçtiği ilacı kalıcı olarak silebilir. Bu işlem sonrasında ilgili ilaç bilgisi sistemden tamamen kaldırılır.
+8. **Reçete Ekleme**
+   - **API Metodu:** `POST /api/prescriptions`
+   - **Açıklama:** Sisteme yeni bir reçete eklenmesini sağlar. Reçete kaydı hasta kimliği (`patientId`), doktor kimliği (`doctorId`), reçete tarihi, kullanım talimatı ve ilaç bilgileri ile oluşturulur.
 
-9. **İlaç Listeleme**
-   - **API Metodu:** `GET api/medications/`
-   - **Açıklama:** Kullanıcının sisteme eklediği tüm ilaçları görüntülemesini sağlar. Kullanıcı ilaçların adını, miktarını, kutu içindeki adet sayısını ve son kullanma tarihini görüntüleyebilir. Bu özellik kullanıcıların evdeki ilaçlarını kolayca takip etmesine yardımcı olur.
+9. **Reçete Bilgilerini Değiştirme**
+   - **API Metodu:** `PUT /api/prescriptions/{prescriptionId}`
+   - **Açıklama:** Sistemde kayıtlı bir reçetenin bilgilerinin güncellenmesini sağlar. Hasta bilgisi, doktor bilgisi, reçete tarihi veya kullanım talimatı gibi alanlar değiştirilebilir.
 
-10. **İlaç Görüntüleme**
-   - **API Metodu:** `GET api/medications/{medicationId}`
-   - **Açıklama:** Kullanıcının sisteme eklediği ilacı görüntülemesini sağlar. Kullanıcı ilacın adını, miktarını, kutu içindeki adet sayısını ve son kullanma tarihini görüntüleyebilir. Bu özellik kullanıcıların evdeki ilaçlarını kolayca takip etmesine yardımcı olur.
+10. **Reçete Silme**
+   - **API Metodu:** `DELETE /api/prescriptions/{prescriptionId}`
+   - **Açıklama:** Sistemde kayıtlı bir reçetenin silinmesini sağlar. Artık geçerli olmayan veya kullanılmayan reçeteler sistemden kaldırılabilir.
 
-11. **Reçete Ekleme**
-   - **API Metodu:** `POST api/prescriptions`
-   - **Açıklama:** Kullanıcıların doktor tarafından verilen reçeteleri sisteme eklemesini sağlar. Kullanıcı reçetede yer alan ilaçları sisteme kaydederek hangi ilaçları kullanması gerektiğini takip edebilir. Sistem aynı zamanda kullanıcının elindeki ilaçlarla reçetedeki ilaçları karşılaştırabilir.
+11. **Reçete Görüntüleme**
+   - **API Metodu:** `GET /api/prescriptions/{prescriptionId}`
+   - **Açıklama:** Sistemde kayıtlı bir reçetenin detaylı şekilde görüntülenmesini sağlar. Kullanıcı reçeteye ait hasta kimliği, doktor kimliği, tarih, talimat ve ilaç bilgilerini inceleyebilir.
 
-12. **Reçete Bilgilerini Değiştirme**
-   - **API Metodu:** `PUT api/prescriptions/{prescriptionsId}`
-   - **Açıklama:** Kullanıcıların sisteme ekledikleri reçetelerin bilgilerini güncellemelerini sağlar. Reçetede yer alan ilaçlar veya diğer bilgiler değiştirilebilir. Bu özellik reçete bilgilerinin güncel tutulmasını sağlar.
+12. **Reçete Listeleme**
+   - **API Metodu:** `GET /api/prescriptions`
+   - **Açıklama:** Sistemde kayıtlı tüm reçetelerin listelenmesini sağlar. Kullanıcı reçeteleri toplu şekilde görüntüleyebilir.
 
-13. **Reçete Silme**
-   - **API Metodu:** `DELETE api/prescriptions/{prescriptionsId}`
-   - **Açıklama:** Kullanıcıların sistemde kayıtlı olan reçeteleri silmesini sağlar. Artık kullanılmayan veya geçerliliğini yitirmiş reçeteler sistemden kaldırılabilir. Silme işlemi sonrasında reçete bilgileri sistemden kalıcı olarak silinir.
+13. **Reçeteye İlaç Ekleme**
+   - **API Metodu:** `POST /api/prescriptions/{prescriptionId}/medications`
+   - **Açıklama:** Var olan bir reçeteye yeni ilaç eklenmesini sağlar. Reçeteye eklenen ilaç adı, son kullanma tarihi, kutu içindeki adet sayısı ve kutu sayısı bilgileriyle birlikte kaydedilir.
 
-14. **Reçete Görüntüleme**
-   - **API Metodu:** `GET /prescriptions/{prescriptionsId}`
-   - **Açıklama:** Kullanıcının sisteme eklediği reçeteyi görüntülemesini sağlar. Kullanıcı reçetede yer alan ilaçları ve ilgili bilgileri inceleyebilir. Bu özellik kullanıcıların reçetelerini takip etmesini ve gerekli ilaçları kontrol etmesini kolaylaştırır.
+14. **Reçetedeki İlaçları Listeleme**
+   - **API Metodu:** `GET /api/prescriptions/{prescriptionId}/medications`
+   - **Açıklama:** Belirli bir reçete içinde bulunan tüm ilaçların listelenmesini sağlar. Kullanıcı reçetede yer alan ilaçları toplu şekilde görüntüleyebilir.
 
-15. **Reçete Listeleme**
-   - **API Metodu:** `GET /prescriptions/`
-   - **Açıklama:** Kullanıcının sisteme eklediği tüm reçeteleri görüntülemesini sağlar. Kullanıcı reçetelerde yer alan ilaçları ve ilgili bilgileri inceleyebilir. Bu özellik kullanıcıların reçetelerini takip etmesini ve gerekli ilaçları kontrol etmesini kolaylaştırır.
+15. **Reçetedeki İlacı Görüntüleme**
+   - **API Metodu:** `GET /api/prescriptions/{prescriptionId}/medications/{medicationId}`
+   - **Açıklama:** Belirli bir reçete içindeki tek bir ilacın görüntülenmesini sağlar. Kullanıcı ilgili ilacın detaylarını inceleyebilir.
+
+16. **Reçetedeki İlacı Güncelleme**
+   - **API Metodu:** `PUT /api/prescriptions/{prescriptionId}/medications/{medicationId}`
+   - **Açıklama:** Belirli bir reçete içinde kayıtlı olan ilacın bilgilerinin güncellenmesini sağlar. İlaç adı, son kullanma tarihi, kutu içindeki adet sayısı ve kutu sayısı değiştirilebilir.
+
+17. **Reçetedeki İlacı Silme**
+   - **API Metodu:** `DELETE /api/prescriptions/{prescriptionId}/medications/{medicationId}`
+   - **Açıklama:** Belirli bir reçete içinde yer alan ilacın silinmesini sağlar. Böylece reçete içeriği güncellenebilir.

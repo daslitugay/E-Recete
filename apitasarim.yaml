@@ -3,31 +3,27 @@ info:
   title: Dijital İlaç Dolabı ve Reçete Yönetim API'si
   version: 1.0.0
   description: >
-    Bu API, kullanıcıların sisteme kayıt olup giriş yapmasını, profil bilgilerini yönetmesini,
-    evlerinde bulunan ilaçları dijital olarak takip etmesini ve reçetelerini sisteme ekleyip
-    yönetmesini sağlayan RESTful bir servistir. API JWT tabanlı kimlik doğrulama ile korunmaktadır.
-  
+    Bu API, kullanıcıların sisteme kayıt olup giriş yapmasını, evlerinde bulunan ilaçları
+    dijital olarak takip etmesini ve reçetelerini sisteme ekleyip yönetmesini sağlayan
+    RESTful bir servistir. Sistemde kullanıcı rolleri doctor ve patient olarak tanımlanmıştır.
+    JWT token üretimi auth işlemlerinde kullanılmaktadır.
 
 servers:
-  - url: https://api.example.com
-    description: Production sunucusu
-  - url: https://staging-api.example.com
-    description: Staging sunucusu
   - url: http://localhost:3000
     description: Local development sunucusu
 
 tags:
   - name: Auth
     description: Kayıt olma ve giriş yapma işlemleri
-  - name: Users
-    description: Kullanıcı profil yönetimi işlemleri
   - name: Medications
-    description: Kullanıcının ilaç dolabı yönetimi işlemleri
+    description: İlaç yönetimi işlemleri
   - name: Prescriptions
     description: Reçete yönetimi işlemleri
+  - name: Prescription Medications
+    description: Reçete içindeki ilaçları yönetme işlemleri
 
 paths:
-  api/auth/register:
+  /api/register:
     post:
       tags:
         - Auth
@@ -41,26 +37,26 @@ paths:
             schema:
               $ref: "#/components/schemas/RegisterInput"
       responses:
-        "201":
-          description: Kullanıcı başarıyla oluşturuldu
+        "200":
+          description: Kullanıcı başarıyla oluşturuldu ve token üretildi
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthResponse"
         "400":
-          description: Geçersiz istek verisi
+          description: Eksik veya geçersiz istek verisi
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "409":
-          description: Bu email adresi ile kayıtlı kullanıcı zaten var
+        "500":
+          description: Sunucu hatası
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  api/auth/login:
+  /api/login:
     post:
       tags:
         - Auth
@@ -75,184 +71,47 @@ paths:
               $ref: "#/components/schemas/LoginInput"
       responses:
         "200":
-          description: Giriş başarılı
+          description: Giriş başarılı ve token üretildi
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthResponse"
         "400":
-          description: Geçersiz istek verisi
+          description: Eksik veya geçersiz istek verisi
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
         "401":
-          description: Email veya şifre hatalı
+          description: Kimlik numarası veya şifre hatalı
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Sunucu hatası
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  api/users/{userId}:
-    parameters:
-      - name: userId
-        in: path
-        required: true
-        description: Kullanıcının benzersiz kimlik numarası
-        schema:
-          type: string
-        example: usr_12345
-
-    get:
-      tags:
-        - Users
-      summary: Profil görüntüle
-      operationId: getUserProfile
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: Kullanıcı profili başarıyla getirildi
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "401":
-          description: Kimlik doğrulama başarısız
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Bu kullanıcı bilgilerini görüntüleme yetkiniz yok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Kullanıcı bulunamadı
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-    put:
-      tags:
-        - Users
-      summary: Profil güncelle
-      operationId: updateUserProfile
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserUpdateInput"
-      responses:
-        "200":
-          description: Kullanıcı profili başarıyla güncellendi
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "400":
-          description: Geçersiz istek verisi
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "401":
-          description: Kimlik doğrulama başarısız
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Bu kullanıcıyı güncelleme yetkiniz yok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Kullanıcı bulunamadı
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "409":
-          description: Email adresi başka bir kullanıcı tarafından kullanılıyor
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-    delete:
-      tags:
-        - Users
-      summary: Hesap sil
-      operationId: deleteUserAccount
-      security:
-        - BearerAuth: []
-      responses:
-        "204":
-          description: Kullanıcı hesabı başarıyla silindi
-        "401":
-          description: Kimlik doğrulama başarısız
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Bu kullanıcıyı silme yetkiniz yok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "404":
-          description: Kullanıcı bulunamadı
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-  api/medications:
+  /api/medications:
     get:
       tags:
         - Medications
-      summary: Kullanıcının tüm ilaçlarını listele
+      summary: Tüm ilaçları listele
       operationId: listMedications
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: page
-          in: query
-          required: false
-          description: Sayfa numarası
-          schema:
-            type: integer
-            minimum: 1
-            default: 1
-          example: 1
-        - name: limit
-          in: query
-          required: false
-          description: Sayfa başına sonuç sayısı
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 50
-            default: 10
-          example: 10
       responses:
         "200":
           description: İlaçlar başarıyla listelendi
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MedicationListResponse"
-        "401":
-          description: Kimlik doğrulama başarısız
+                type: array
+                items:
+                  $ref: "#/components/schemas/Medication"
+        "400":
+          description: Hatalı istek
           content:
             application/json:
               schema:
@@ -263,8 +122,6 @@ paths:
         - Medications
       summary: İlaç ekle
       operationId: addMedication
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -284,30 +141,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "401":
-          description: Kimlik doğrulama başarısız
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
 
-  api/medications/{medicationId}:
+  /api/medications/{medicationId}:
     parameters:
       - name: medicationId
         in: path
         required: true
-        description: İlacın benzersiz kimlik numarası
+        description: İlacın benzersiz MongoDB kimliği
         schema:
           type: string
-        example: med_12345
+        example: 67cfb7c8f2a1c3d4e5f67890
 
     get:
       tags:
         - Medications
       summary: Tek bir ilacı görüntüle
       operationId: getMedication
-      security:
-        - BearerAuth: []
       responses:
         "200":
           description: İlaç bilgisi başarıyla getirildi
@@ -315,20 +164,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Medication"
-        "401":
-          description: Kimlik doğrulama başarısız
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Bu ilacı görüntüleme yetkiniz yok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         "404":
           description: İlaç bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "400":
+          description: Geçersiz medicationId
           content:
             application/json:
               schema:
@@ -339,8 +182,6 @@ paths:
         - Medications
       summary: İlaç bilgilerini güncelle
       operationId: updateMedication
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -354,26 +195,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Medication"
-        "400":
-          description: Geçersiz istek verisi
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "401":
-          description: Kimlik doğrulama başarısız
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Bu ilacı güncelleme yetkiniz yok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         "404":
           description: İlaç bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "400":
+          description: Geçersiz istek verisi
           content:
             application/json:
               schema:
@@ -384,67 +213,43 @@ paths:
         - Medications
       summary: İlaç sil
       operationId: deleteMedication
-      security:
-        - BearerAuth: []
       responses:
-        "204":
+        "200":
           description: İlaç başarıyla silindi
-        "401":
-          description: Kimlik doğrulama başarısız
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Bu ilacı silme yetkiniz yok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/MessageResponse"
         "404":
           description: İlaç bulunamadı
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "400":
+          description: Geçersiz medicationId
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
-  api/prescriptions:
+  /api/prescriptions:
     get:
       tags:
         - Prescriptions
-      summary: Kullanıcının tüm reçetelerini listele
+      summary: Tüm reçeteleri listele
       operationId: listPrescriptions
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: page
-          in: query
-          required: false
-          description: Sayfa numarası
-          schema:
-            type: integer
-            minimum: 1
-            default: 1
-          example: 1
-        - name: limit
-          in: query
-          required: false
-          description: Sayfa başına sonuç sayısı
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 50
-            default: 10
-          example: 10
       responses:
         "200":
           description: Reçeteler başarıyla listelendi
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PrescriptionListResponse"
-        "401":
-          description: Kimlik doğrulama başarısız
+                type: array
+                items:
+                  $ref: "#/components/schemas/Prescription"
+        "400":
+          description: Hatalı istek
           content:
             application/json:
               schema:
@@ -455,8 +260,6 @@ paths:
         - Prescriptions
       summary: Reçete ekle
       operationId: addPrescription
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -476,30 +279,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "401":
-          description: Kimlik doğrulama başarısız
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
 
-  api/prescriptions/{prescriptionId}:
+  /api/prescriptions/{prescriptionId}:
     parameters:
       - name: prescriptionId
         in: path
         required: true
-        description: Reçetenin benzersiz kimlik numarası
+        description: Reçetenin benzersiz MongoDB kimliği
         schema:
           type: string
-        example: pre_12345
+        example: 67cfb7c8f2a1c3d4e5f67891
 
     get:
       tags:
         - Prescriptions
       summary: Tek bir reçeteyi görüntüle
       operationId: getPrescription
-      security:
-        - BearerAuth: []
       responses:
         "200":
           description: Reçete başarıyla getirildi
@@ -507,20 +302,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Prescription"
-        "401":
-          description: Kimlik doğrulama başarısız
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Bu reçeteyi görüntüleme yetkiniz yok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         "404":
           description: Reçete bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "400":
+          description: Geçersiz prescriptionId
           content:
             application/json:
               schema:
@@ -531,8 +320,6 @@ paths:
         - Prescriptions
       summary: Reçete bilgilerini güncelle
       operationId: updatePrescription
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -546,26 +333,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Prescription"
-        "400":
-          description: Geçersiz istek verisi
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "401":
-          description: Kimlik doğrulama başarısız
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Bu reçeteyi güncelleme yetkiniz yok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         "404":
           description: Reçete bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "400":
+          description: Geçersiz istek verisi
           content:
             application/json:
               schema:
@@ -576,25 +351,187 @@ paths:
         - Prescriptions
       summary: Reçete sil
       operationId: deletePrescription
-      security:
-        - BearerAuth: []
       responses:
-        "204":
+        "200":
           description: Reçete başarıyla silindi
-        "401":
-          description: Kimlik doğrulama başarısız
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Bu reçeteyi silme yetkiniz yok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/MessageResponse"
         "404":
           description: Reçete bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "400":
+          description: Geçersiz prescriptionId
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/prescriptions/{prescriptionId}/medications:
+    parameters:
+      - name: prescriptionId
+        in: path
+        required: true
+        description: Reçetenin benzersiz MongoDB kimliği
+        schema:
+          type: string
+        example: 67cfb7c8f2a1c3d4e5f67891
+
+    get:
+      tags:
+        - Prescription Medications
+      summary: Reçetedeki ilaçları listele
+      operationId: getMedicationsForPrescription
+      responses:
+        "200":
+          description: Reçetedeki ilaçlar başarıyla getirildi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmbeddedMedication"
+        "404":
+          description: Reçete bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "400":
+          description: Geçersiz prescriptionId
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      tags:
+        - Prescription Medications
+      summary: Reçeteye ilaç ekle
+      operationId: addMedicationToPrescription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmbeddedMedicationInput"
+      responses:
+        "201":
+          description: Reçeteye ilaç başarıyla eklendi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmbeddedMedication"
+        "404":
+          description: Reçete bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "400":
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/prescriptions/{prescriptionId}/medications/{medicationId}:
+    parameters:
+      - name: prescriptionId
+        in: path
+        required: true
+        description: Reçetenin benzersiz MongoDB kimliği
+        schema:
+          type: string
+        example: 67cfb7c8f2a1c3d4e5f67891
+      - name: medicationId
+        in: path
+        required: true
+        description: Reçete içindeki ilacın benzersiz MongoDB kimliği
+        schema:
+          type: string
+        example: 67cfb7c8f2a1c3d4e5f67892
+
+    get:
+      tags:
+        - Prescription Medications
+      summary: Reçete içindeki ilacı görüntüle
+      operationId: getMedicationForPrescription
+      responses:
+        "200":
+          description: Reçete içindeki ilaç bilgisi başarıyla getirildi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmbeddedMedication"
+        "404":
+          description: Reçete veya ilaç bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "400":
+          description: Geçersiz parametre
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    put:
+      tags:
+        - Prescription Medications
+      summary: Reçete içindeki ilacı güncelle
+      operationId: updateMedicationForPrescription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmbeddedMedicationInput"
+      responses:
+        "200":
+          description: Reçete içindeki ilaç başarıyla güncellendi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmbeddedMedication"
+        "404":
+          description: Reçete veya ilaç bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "400":
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      tags:
+        - Prescription Medications
+      summary: Reçete içindeki ilacı sil
+      operationId: removeMedicationFromPrescription
+      responses:
+        "200":
+          description: Reçete içindeki ilaç başarıyla silindi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "404":
+          description: Reçete veya ilaç bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "400":
+          description: Geçersiz parametre
           content:
             application/json:
               schema:
@@ -612,315 +549,245 @@ components:
     RegisterInput:
       type: object
       properties:
-        firstName:
+        name:
           type: string
-          minLength: 2
-          maxLength: 50
-          example: Can
-        lastName:
+          example: Can Yılmaz
+        IDnumber:
           type: string
-          minLength: 2
-          maxLength: 50
-          example: Yılmaz
-        email:
+          example: "12345678901"
+        role:
           type: string
-          format: email
-          example: can@example.com
-        phone:
-          type: string
-          example: "05551234567"
+          enum:
+            - doctor
+            - patient
+          example: patient
         password:
           type: string
           format: password
-          minLength: 6
           example: StrongPass123
       required:
-        - firstName
-        - lastName
-        - email
+        - name
+        - IDnumber
+        - role
         - password
 
     LoginInput:
       type: object
       properties:
-        email:
+        IDnumber:
           type: string
-          format: email
-          example: can@example.com
+          example: "12345678901"
         password:
           type: string
           format: password
           example: StrongPass123
       required:
-        - email
+        - IDnumber
         - password
 
     AuthResponse:
       type: object
       properties:
-        message:
+        status:
           type: string
-          example: İşlem başarılı
+          example: success
         token:
           type: string
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-        user:
-          $ref: "#/components/schemas/User"
       required:
-        - message
+        - status
         - token
-        - user
 
-    User:
+    UserPayload:
       type: object
       properties:
-        id:
+        _id:
           type: string
-          example: usr_12345
-        firstName:
+          example: 67cfb7c8f2a1c3d4e5f67893
+        IDnumber:
           type: string
-          example: Can
-        lastName:
+          example: "12345678901"
+        name:
           type: string
-          example: Yılmaz
-        email:
-          type: string
-          format: email
-          example: can@example.com
-        phone:
-          type: string
-          example: "05551234567"
+          example: Can Yılmaz
         role:
           type: string
           enum:
-            - user
-            - admin
-          example: user
-        accountStatus:
-          type: string
-          enum:
-            - active
-            - passive
-            - suspended
-          example: active
-        createdAt:
-          type: string
-          format: date-time
-          example: "2026-03-09T10:30:00Z"
-      required:
-        - id
-        - firstName
-        - lastName
-        - email
-        - role
-        - accountStatus
-        - createdAt
-
-    UserUpdateInput:
-      type: object
-      properties:
-        firstName:
-          type: string
-          minLength: 2
-          maxLength: 50
-          example: Can
-        lastName:
-          type: string
-          minLength: 2
-          maxLength: 50
-          example: Demir
-        email:
-          type: string
-          format: email
-          example: can.demir@example.com
-        phone:
-          type: string
-          example: "05559876543"
-      required:
-        - firstName
-        - lastName
-        - email
+            - doctor
+            - patient
+          example: patient
 
     Medication:
       type: object
       properties:
-        id:
+        _id:
           type: string
-          example: med_12345
-        userId:
-          type: string
-          example: usr_12345
-        medicationName:
+          example: 67cfb7c8f2a1c3d4e5f67890
+        name:
           type: string
           example: Parol
-        boxCount:
-          type: integer
-          minimum: 1
-          example: 2
-        unitsPerBox:
-          type: integer
-          minimum: 1
-          example: 20
         expirationDate:
           type: string
-          format: date
-          example: "2026-12-31"
-        createdAt:
-          type: string
           format: date-time
-          example: "2026-03-09T11:00:00Z"
+          example: "2026-12-31T00:00:00.000Z"
+        unitsPerBox:
+          type: integer
+          example: 20
+        boxCount:
+          type: integer
+          example: 2
       required:
-        - id
-        - userId
-        - medicationName
-        - boxCount
-        - unitsPerBox
+        - _id
+        - name
         - expirationDate
-        - createdAt
+        - unitsPerBox
+        - boxCount
 
     MedicationInput:
       type: object
       properties:
-        medicationName:
+        name:
           type: string
-          minLength: 2
-          maxLength: 100
           example: Parol
-        boxCount:
-          type: integer
-          minimum: 1
-          example: 2
+        expirationDate:
+          type: string
+          format: date-time
+          example: "2026-12-31T00:00:00.000Z"
         unitsPerBox:
           type: integer
           minimum: 1
           example: 20
-        expirationDate:
-          type: string
-          format: date
-          example: "2026-12-31"
-      required:
-        - medicationName
-        - boxCount
-        - unitsPerBox
-        - expirationDate
-
-    MedicationListResponse:
-      type: object
-      properties:
-        page:
+        boxCount:
           type: integer
-          example: 1
-        limit:
-          type: integer
-          example: 10
-        total:
-          type: integer
+          minimum: 1
           example: 2
-        data:
-          type: array
-          items:
-            $ref: "#/components/schemas/Medication"
       required:
-        - page
-        - limit
-        - total
-        - data
+        - name
+        - expirationDate
+        - unitsPerBox
+        - boxCount
 
-    PrescriptionMedication:
+    EmbeddedMedication:
       type: object
       properties:
-        medicationName:
+        _id:
+          type: string
+          example: 67cfb7c8f2a1c3d4e5f67892
+        name:
           type: string
           example: Parol
-        dosage:
+        expirationDate:
           type: string
-          example: Günde 2 kez 1 tablet
-        duration:
-          type: string
-          example: 5 gün
+          format: date-time
+          example: "2026-12-31T00:00:00.000Z"
+        unitsPerBox:
+          type: integer
+          example: 20
+        boxCount:
+          type: integer
+          example: 2
       required:
-        - medicationName
+        - _id
+        - name
+        - expirationDate
+        - unitsPerBox
+        - boxCount
+
+    EmbeddedMedicationInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Parol
+        expirationDate:
+          type: string
+          format: date-time
+          example: "2026-12-31T00:00:00.000Z"
+        unitsPerBox:
+          type: integer
+          minimum: 1
+          example: 20
+        boxCount:
+          type: integer
+          minimum: 1
+          example: 2
+      required:
+        - name
+        - expirationDate
+        - unitsPerBox
+        - boxCount
 
     Prescription:
       type: object
       properties:
-        id:
+        _id:
           type: string
-          example: pre_12345
-        userId:
+          example: 67cfb7c8f2a1c3d4e5f67891
+        patientId:
           type: string
-          example: usr_12345
-        doctorName:
+          example: "12345678901"
+        doctorId:
           type: string
-          example: Dr. Ayşe Kaya
-        prescriptionDate:
-          type: string
-          format: date
-          example: "2026-03-01"
-        notes:
-          type: string
-          example: Yemekten sonra kullanılmalıdır.
+          example: "98765432100"
         medications:
           type: array
           items:
-            $ref: "#/components/schemas/PrescriptionMedication"
+            $ref: "#/components/schemas/EmbeddedMedication"
+        datePrescribed:
+          type: string
+          format: date-time
+          example: "2026-03-01T00:00:00.000Z"
+        instructions:
+          type: string
+          example: Tok karnına günde 2 kez kullanınız.
         createdAt:
           type: string
           format: date-time
-          example: "2026-03-09T11:15:00Z"
+          example: "2026-03-09T11:15:00.000Z"
       required:
-        - id
-        - userId
-        - prescriptionDate
+        - _id
+        - patientId
+        - doctorId
         - medications
+        - datePrescribed
+        - instructions
         - createdAt
 
     PrescriptionInput:
       type: object
       properties:
-        doctorName:
+        patientId:
           type: string
-          minLength: 2
-          maxLength: 100
-          example: Dr. Ayşe Kaya
-        prescriptionDate:
+          example: "12345678901"
+        doctorId:
           type: string
-          format: date
-          example: "2026-03-01"
-        notes:
-          type: string
-          maxLength: 500
-          example: Yemekten sonra kullanılmalıdır.
+          example: "98765432100"
         medications:
           type: array
-          minItems: 1
           items:
-            $ref: "#/components/schemas/PrescriptionMedication"
+            $ref: "#/components/schemas/EmbeddedMedicationInput"
+        datePrescribed:
+          type: string
+          format: date-time
+          example: "2026-03-01T00:00:00.000Z"
+        instructions:
+          type: string
+          example: Tok karnına günde 2 kez kullanınız.
       required:
-        - prescriptionDate
+        - patientId
+        - doctorId
         - medications
+        - datePrescribed
+        - instructions
 
-    PrescriptionListResponse:
+    MessageResponse:
       type: object
       properties:
-        page:
-          type: integer
-          example: 1
-        limit:
-          type: integer
-          example: 10
-        total:
-          type: integer
-          example: 3
-        data:
-          type: array
-          items:
-            $ref: "#/components/schemas/Prescription"
+        message:
+          type: string
+          example: İşlem başarıyla tamamlandı
       required:
-        - page
-        - limit
-        - total
-        - data
+        - message
 
     Error:
       type: object
