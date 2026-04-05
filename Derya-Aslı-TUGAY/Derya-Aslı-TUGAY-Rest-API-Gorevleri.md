@@ -1,6 +1,6 @@
 # Derya Aslı Tugay'ın REST API Metotları
 
-**API Test Videosu:** [Link buraya eklenecek](https://example.com)
+**API Test Videosu:** [Link](https://youtu.be/mCTkSXwZvfs)
 
 ## 1. Üye Olma
 - **Endpoint:** `POST /api/register`

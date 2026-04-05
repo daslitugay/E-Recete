@@ -1,5 +1,5 @@
 # Derya Aslı Tugay'ın Web Frontend Görevleri
-**Front-end Test Videosu:** [Link buraya eklenecek](https://example.com)
+**Front-end Test Videosu:** [Link](https://youtu.be/P_lexPmsF00)
 
 ## 1. Üye Olma (Kayıt) Sayfası
 - **API Endpoint:** `POST /api/register`
