@@ -70,10 +70,10 @@ pipeline {
 
     stage('Health Check') {
       steps {
-        echo 'Backend health check bekleniyor...'
+        echo 'Backend health check container içinde kontrol ediliyor...'
         sh '''
           for i in $(seq 1 20); do
-            if curl -fsS ${BACKEND_HEALTH_URL}; then
+            if docker compose -f ${COMPOSE_FILE_NAME} exec -T backend node -e "fetch('http://localhost:5000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"; then
               echo "Backend hazır"
               exit 0
             fi
@@ -88,10 +88,10 @@ pipeline {
           exit 1
         '''
 
-        echo 'Frontend kontrol ediliyor...'
+        echo 'Frontend container içinde kontrol ediliyor...'
         sh '''
           for i in $(seq 1 20); do
-            if curl -fsS ${FRONTEND_URL}; then
+            if docker compose -f ${COMPOSE_FILE_NAME} exec -T frontend node -e "fetch('http://localhost:5173').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"; then
               echo "Frontend hazır"
               exit 0
             fi
