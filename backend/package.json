@@ -1,20 +1,32 @@
 {
   "name": "backend",
-  "version": "0.0.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "start": "node ./bin/www"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed:admin": "node src/utils/seedAdmin.js"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "cookie-parser": "~1.4.4",
-    "debug": "~2.6.9",
-    "dotenv": "^17.3.1",
-    "express": "~4.16.1",
-    "express-jwt": "^8.5.1",
+    "amqplib": "^2.0.1",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-async-handler": "^1.2.0",
+    "express-rate-limit": "^8.4.1",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.3.1",
-    "morgan": "~1.9.1",
-    "passport": "^0.7.0",
-    "passport-local": "^1.0.0"
+    "mongoose": "^9.5.0",
+    "morgan": "^1.10.1",
+    "redis": "^5.12.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
