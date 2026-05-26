@@ -30,7 +30,6 @@ const AppLayout = () => {
     { label: 'Dashboard', to: '/admin/dashboard' },
     { label: 'Doktor Onayları', to: '/admin/doctors' },
     { label: 'Kullanıcılar', to: '/admin/users' },
-    { label: 'Event Logları', to: '/admin/event-logs' },
   ];
 
   const linksByRole = {

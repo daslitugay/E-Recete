@@ -5,8 +5,6 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 
 const connectDB = require('./config/db');
-const { connectRedis } = require('./config/redis');
-const { connectRabbitMQ } = require('./config/rabbitmq');
 
 const healthRoutes = require('./routes/healthRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -16,7 +14,6 @@ const doctorPatientRoutes = require('./routes/doctorPatientRoutes');
 const prescriptionRoutes = require('./routes/prescriptionRoutes');
 const metaRoutes = require('./routes/metaRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
-const eventLogRoutes = require('./routes/eventLogRoutes');
 
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 const {
@@ -27,8 +24,6 @@ const {
 dotenv.config();
 
 connectDB();
-connectRedis();
-connectRabbitMQ();
 
 const app = express();
 
@@ -87,7 +82,6 @@ app.use('/api/connections', doctorPatientRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api/meta', metaRoutes);
 app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/event-logs', eventLogRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

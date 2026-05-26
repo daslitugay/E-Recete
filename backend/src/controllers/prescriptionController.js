@@ -10,14 +10,6 @@ const { USER_ROLES } = require('../models/User');
 const {
   enrichPrescriptionItemsWithStock,
 } = require('../utils/prescriptionMatcher');
-const { publishPrescriptionCreated } = require('../utils/eventPublisher');
-const { deleteCache } = require('../utils/cache');
-
-const invalidatePrescriptionRelatedDashboards = async (patientId, doctorId) => {
-  await deleteCache(`dashboard:patient:${patientId}`);
-  await deleteCache(`dashboard:doctor:${doctorId}`);
-  await deleteCache('dashboard:admin');
-};
 
 const ensureDoctorConnectedToPatient = async (doctorId, patientId) => {
   const connection = await DoctorPatient.findOne({
@@ -64,14 +56,10 @@ const createPrescription = asyncHandler(async (req, res) => {
     generalNote,
   });
 
-  await invalidatePrescriptionRelatedDashboards(patientId, req.user._id);
-
   const populatedPrescription = await Prescription.findById(prescription._id)
     .populate('patient', 'name email patientCode')
     .populate('doctor', 'name email specialization')
     .populate('items.matchedMedicine', 'name dosage form remainingUnits expiryDate');
-
-  await publishPrescriptionCreated(populatedPrescription, req.user._id);
 
   res.status(201).json({
     success: true,
@@ -170,11 +158,6 @@ const refreshPrescriptionStock = asyncHandler(async (req, res) => {
 
   await prescription.save();
 
-  await invalidatePrescriptionRelatedDashboards(
-    prescription.patient,
-    prescription.doctor
-  );
-
   const populatedPrescription = await Prescription.findById(prescription._id)
     .populate('patient', 'name email patientCode')
     .populate('doctor', 'name email specialization')
@@ -210,11 +193,6 @@ const updatePrescriptionStatus = asyncHandler(async (req, res) => {
   prescription.status = status;
 
   await prescription.save();
-
-  await invalidatePrescriptionRelatedDashboards(
-    prescription.patient,
-    prescription.doctor
-  );
 
   res.status(200).json({
     success: true,

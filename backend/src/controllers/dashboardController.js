@@ -7,9 +7,6 @@ const {
   DoctorPatient,
   CONNECTION_STATUS,
 } = require('../models/DoctorPatient');
-const { getCache, setCache } = require('../utils/cache');
-
-const DASHBOARD_CACHE_TTL_SECONDS = 30;
 
 const buildMedicineStats = (medicines) => {
   const stats = {
@@ -52,20 +49,6 @@ const buildMedicineStats = (medicines) => {
 };
 
 const getPatientDashboard = asyncHandler(async (req, res) => {
-  const cacheKey = `dashboard:patient:${req.user._id}`;
-
-  const cachedDashboard = await getCache(cacheKey);
-
-  if (cachedDashboard) {
-    res.status(200).json({
-      success: true,
-      source: 'cache',
-      dashboard: cachedDashboard,
-    });
-
-    return;
-  }
-
   const medicines = await Medicine.find({ patient: req.user._id }).sort({
     expiryDate: 1,
   });
@@ -101,50 +84,31 @@ const getPatientDashboard = asyncHandler(async (req, res) => {
     )
     .slice(0, 5);
 
-  const dashboard = {
-    medicineStats,
-    prescriptionStats: {
-      totalPrescriptions: await Prescription.countDocuments({
-        patient: req.user._id,
-      }),
-      activePrescriptions: await Prescription.countDocuments({
-        patient: req.user._id,
-        status: 'ACTIVE',
-      }),
-    },
-    connectionStats: {
-      pendingRequests,
-      connectedDoctors,
-    },
-    recentPrescriptions: prescriptions,
-    upcomingExpiryMedicines,
-    lowStockMedicines,
-  };
-
-  await setCache(cacheKey, dashboard, DASHBOARD_CACHE_TTL_SECONDS);
-
   res.status(200).json({
     success: true,
-    source: 'database',
-    dashboard,
+    dashboard: {
+      medicineStats,
+      prescriptionStats: {
+        totalPrescriptions: await Prescription.countDocuments({
+          patient: req.user._id,
+        }),
+        activePrescriptions: await Prescription.countDocuments({
+          patient: req.user._id,
+          status: 'ACTIVE',
+        }),
+      },
+      connectionStats: {
+        pendingRequests,
+        connectedDoctors,
+      },
+      recentPrescriptions: prescriptions,
+      upcomingExpiryMedicines,
+      lowStockMedicines,
+    },
   });
 });
 
 const getDoctorDashboard = asyncHandler(async (req, res) => {
-  const cacheKey = `dashboard:doctor:${req.user._id}`;
-
-  const cachedDashboard = await getCache(cacheKey);
-
-  if (cachedDashboard) {
-    res.status(200).json({
-      success: true,
-      source: 'cache',
-      dashboard: cachedDashboard,
-    });
-
-    return;
-  }
-
   const connectedPatientCount = await DoctorPatient.countDocuments({
     doctor: req.user._id,
     status: CONNECTION_STATUS.ACCEPTED,
@@ -171,42 +135,23 @@ const getDoctorDashboard = asyncHandler(async (req, res) => {
     status: 'ACTIVE',
   });
 
-  const dashboard = {
-    patientStats: {
-      connectedPatients: connectedPatientCount,
-      pendingRequests: pendingPatientCount,
-    },
-    prescriptionStats: {
-      totalPrescriptions,
-      activePrescriptions,
-    },
-    recentPrescriptions: prescriptions,
-  };
-
-  await setCache(cacheKey, dashboard, DASHBOARD_CACHE_TTL_SECONDS);
-
   res.status(200).json({
     success: true,
-    source: 'database',
-    dashboard,
+    dashboard: {
+      patientStats: {
+        connectedPatients: connectedPatientCount,
+        pendingRequests: pendingPatientCount,
+      },
+      prescriptionStats: {
+        totalPrescriptions,
+        activePrescriptions,
+      },
+      recentPrescriptions: prescriptions,
+    },
   });
 });
 
 const getAdminDashboard = asyncHandler(async (req, res) => {
-  const cacheKey = 'dashboard:admin';
-
-  const cachedDashboard = await getCache(cacheKey);
-
-  if (cachedDashboard) {
-    res.status(200).json({
-      success: true,
-      source: 'cache',
-      dashboard: cachedDashboard,
-    });
-
-    return;
-  }
-
   const totalUsers = await User.countDocuments({});
   const totalPatients = await User.countDocuments({
     role: USER_ROLES.PATIENT,
@@ -235,28 +180,23 @@ const getAdminDashboard = asyncHandler(async (req, res) => {
     .sort({ createdAt: -1 })
     .limit(5);
 
-  const dashboard = {
-    userStats: {
-      totalUsers,
-      totalPatients,
-      totalDoctors,
-      pendingDoctors,
-      approvedDoctors,
-    },
-    systemStats: {
-      totalMedicines,
-      totalPrescriptions,
-      activePrescriptions,
-    },
-    recentDoctors,
-  };
-
-  await setCache(cacheKey, dashboard, DASHBOARD_CACHE_TTL_SECONDS);
-
   res.status(200).json({
     success: true,
-    source: 'database',
-    dashboard,
+    dashboard: {
+      userStats: {
+        totalUsers,
+        totalPatients,
+        totalDoctors,
+        pendingDoctors,
+        approvedDoctors,
+      },
+      systemStats: {
+        totalMedicines,
+        totalPrescriptions,
+        activePrescriptions,
+      },
+      recentDoctors,
+    },
   });
 });
 

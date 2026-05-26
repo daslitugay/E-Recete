@@ -2,12 +2,6 @@ const asyncHandler = require('express-async-handler');
 
 const { Medicine } = require('../models/Medicine');
 const { USER_ROLES } = require('../models/User');
-const { deleteCache } = require('../utils/cache');
-
-const invalidatePatientDashboard = async (patientId) => {
-  await deleteCache(`dashboard:patient:${patientId}`);
-  await deleteCache('dashboard:admin');
-};
 
 const createMedicine = asyncHandler(async (req, res) => {
   const {
@@ -37,8 +31,6 @@ const createMedicine = asyncHandler(async (req, res) => {
     expiryDate,
     notes,
   });
-
-  await invalidatePatientDashboard(req.user._id);
 
   res.status(201).json({
     success: true,
@@ -113,7 +105,6 @@ const updateMedicine = asyncHandler(async (req, res) => {
   });
 
   await medicine.save();
-  await invalidatePatientDashboard(req.user._id);
 
   res.status(200).json({
     success: true,
@@ -136,7 +127,6 @@ const deleteMedicine = asyncHandler(async (req, res) => {
   }
 
   await medicine.deleteOne();
-  await invalidatePatientDashboard(req.user._id);
 
   res.status(200).json({
     success: true,

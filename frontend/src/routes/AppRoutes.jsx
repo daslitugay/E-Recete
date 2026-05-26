@@ -3,7 +3,6 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout from '../layouts/AppLayout';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
 import AdminDoctorsPage from '../pages/admin/AdminDoctorsPage';
-import AdminEventLogsPage from '../pages/admin/AdminEventLogsPage';
 import AdminUsersPage from '../pages/admin/AdminUsersPage';
 import DoctorCreatePrescriptionPage from '../pages/doctor/DoctorCreatePrescriptionPage';
 import DoctorDashboardPage from '../pages/doctor/DoctorDashboardPage';
@@ -82,7 +81,6 @@ const AppRoutes = () => {
             <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
             <Route path="/admin/doctors" element={<AdminDoctorsPage />} />
             <Route path="/admin/users" element={<AdminUsersPage />} />
-            <Route path="/admin/event-logs" element={<AdminEventLogsPage />} />
           </Route>
         </Route>
       </Route>
